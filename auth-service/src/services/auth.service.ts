@@ -42,7 +42,7 @@ class AuthService {
     }
 
     const password = await this.passwordService.hashPassword(user.password);
-    const activationCode = this.jwtService.createJwtToken(
+    const activationCode = this.jwtService.createToken(
       { _id: new ObjectId().toString() },
       Times.Hour
     );
@@ -93,7 +93,7 @@ class AuthService {
       email: userFound.email,
       username: userFound.username,
     };
-    result.token = this.jwtService.createJwtToken(payload, Times.Day);
+    result.token = this.jwtService.createToken(payload, Times.Day);
 
     return result;
   }

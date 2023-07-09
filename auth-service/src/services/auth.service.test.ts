@@ -21,7 +21,7 @@ jest.mock("./password.service", () => {
 });
 jest.mock("./jwt.service", () => {
   return jest.fn().mockImplementation(() => ({
-    createJwtToken: jest.fn().mockReturnValue("mockedToken"),
+    createToken: jest.fn().mockReturnValue("mockedToken"),
     validatePassword: jest.fn().mockReturnValue(true),
   }));
 });
@@ -153,7 +153,7 @@ describe("AuthService", () => {
 
       UserModel.findOne = jest.fn().mockResolvedValueOnce(dbUser);
       passwordService.validatePassword = jest.fn().mockReturnValueOnce(true);
-      jwtService.createJwtToken = jest.fn().mockReturnValue(generatedToken);
+      jwtService.createToken = jest.fn().mockReturnValue(generatedToken);
 
       const user: LoginUserDto = {
         username: "testuser",
@@ -175,7 +175,7 @@ describe("AuthService", () => {
         user.password,
         "hashedpassword"
       );
-      expect(jwtService.createJwtToken).toHaveBeenCalledWith(
+      expect(jwtService.createToken).toHaveBeenCalledWith(
         { username: dbUser.username, email: dbUser.email },
         Times.Day
       );
