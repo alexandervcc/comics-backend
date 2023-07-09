@@ -1,10 +1,11 @@
 {
-  "name": "express-graphql",
+  "name": "auth-service",
   "version": "1.0.0",
-  "description": "",
+  "description": "auth micro",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts --exec ts-node",
+    "build": "tsc",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "lint": "eslint . --ext .ts",
