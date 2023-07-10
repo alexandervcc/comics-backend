@@ -1,5 +1,5 @@
-import { Resolver, Mutation, Args, Query, Arg, Authorized } from "type-graphql";
-import { LoginUserDto, User, UserDto } from "../dto/UserDto";
+import { Resolver, Mutation, Args, Query, Arg } from "type-graphql";
+import { LoginUserDto, UserDto } from "../dto/UserDto";
 import { Result, ResultDto } from "../dto/ResultDto";
 import Container from "typedi";
 import AuthService from "../services/auth.service";

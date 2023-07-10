@@ -1,6 +1,5 @@
 import { Service, Inject } from "typedi";
 
-import KafkaProducer from "../config/kafka-producer";
 import PasswordService from "./password.service";
 import JwtService from "./jwt.service";
 
@@ -92,6 +91,7 @@ class AuthService {
 
     const payload: object = {
       email: userFound.email,
+      username: userFound.username,
     };
     result.token = this.jwtService.createJwtToken(payload, Times.Day);
 

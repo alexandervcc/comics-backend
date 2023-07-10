@@ -1,4 +1,6 @@
-require("dotenv").config();
+import { config } from "dotenv";
+
+config();
 
 export const ENV = {
   ENVIRONMENT: process.env.ENVIRONMENT || "local",

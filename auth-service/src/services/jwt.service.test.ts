@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { User } from "../types/interfaces/User";
 import { ENV } from "../env";
 import { ObjectId } from "mongodb";
+import { Times } from "../types/constants/times";
 
 jest.mock("jsonwebtoken");
 
@@ -28,16 +29,15 @@ describe("JwtService", () => {
     it("should generate a valid JWT token", () => {
       const signMock = jest
         .spyOn(jwt, "sign")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .mockReturnValue(mockToken as any);
 
-      const result = jwtService.createJwtToken(mockUser);
+      const result = jwtService.createJwtToken(mockUser, Times.Day);
 
       expect(result).toBe(mockToken);
-      expect(signMock).toHaveBeenCalledWith(
-        { _id: mockUser._id, username: mockUser.username },
-        ENV.JWT_SECRET,
-        { expiresIn: "24h" }
-      );
+      expect(signMock).toHaveBeenCalledWith(mockUser, ENV.JWT_SECRET, {
+        expiresIn: Times.Day,
+      });
     });
   });
 });

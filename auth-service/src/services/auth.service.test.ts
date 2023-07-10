@@ -3,7 +3,6 @@ import "reflect-metadata";
 import UserModel from "./../model/User";
 import PasswordService from "./password.service";
 import AuthService from "./auth.service";
-import KafkaProducer from "../config/kafka-producer";
 import JwtService from "./jwt.service";
 
 import { Error } from "mongoose";
@@ -11,13 +10,9 @@ import { TokenDto } from "../dto/TokenDto";
 import { Result } from "../dto/ResultDto";
 import { LoginUserDto, UserDto } from "../dto/UserDto";
 import { ResultStatus } from "../types/enums/Result";
+import { Times } from "../types/constants/times";
 
 //mocks
-jest.mock("../config/kafka-producer", () => {
-  return jest.fn().mockImplementation(() => ({
-    sendMessageToBroke: jest.fn().mockResolvedValue(true),
-  }));
-});
 jest.mock("./password.service", () => {
   return jest.fn().mockImplementation(() => ({
     hashPassword: jest.fn().mockResolvedValue("mockedHashedPassword"),
@@ -37,10 +32,9 @@ describe("AuthService", () => {
   let jwtService: JwtService;
 
   beforeEach(() => {
-    const kafkaProducer = new KafkaProducer();
     jwtService = new JwtService();
     passwordService = new PasswordService();
-    authService = new AuthService(kafkaProducer, passwordService, jwtService);
+    authService = new AuthService(passwordService, jwtService);
   });
 
   afterEach(() => {
@@ -153,8 +147,10 @@ describe("AuthService", () => {
       const dbUser = {
         username: "testuser",
         password: "hashedpassword",
+        email: "test@gmail.com",
       };
       const generatedToken = "mockedtoken";
+
       UserModel.findOne = jest.fn().mockResolvedValueOnce(dbUser);
       passwordService.validatePassword = jest.fn().mockReturnValueOnce(true);
       jwtService.createJwtToken = jest.fn().mockReturnValue(generatedToken);
@@ -179,7 +175,10 @@ describe("AuthService", () => {
         user.password,
         "hashedpassword"
       );
-      expect(jwtService.createJwtToken).toHaveBeenCalledWith(dbUser);
+      expect(jwtService.createJwtToken).toHaveBeenCalledWith(
+        { username: dbUser.username, email: dbUser.email },
+        Times.Day
+      );
       expect(loginResult).toEqual(result);
     });
 
