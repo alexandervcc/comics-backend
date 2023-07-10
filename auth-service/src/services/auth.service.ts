@@ -12,11 +12,12 @@ import { Result } from "../dto/ResultDto";
 
 import { ResultStatus } from "../types/enums/Result";
 import { User } from "../types/interfaces/User";
+import { Times } from "../types/constants/times";
+import { ObjectId } from "mongodb";
 
 @Service()
 class AuthService {
   constructor(
-    @Inject() private kafkaProducer: KafkaProducer,
     @Inject() private passwordService: PasswordService,
     @Inject() private jwtService: JwtService
   ) {}
@@ -42,9 +43,14 @@ class AuthService {
     }
 
     const password = await this.passwordService.hashPassword(user.password);
+    const activationCode = this.jwtService.createJwtToken(
+      { _id: new ObjectId().toString() },
+      Times.Hour
+    );
     const newUser = new UserModel({
       ...user,
       password,
+      activationCode,
     });
     const validationErrors = newUser.validateSync();
 
@@ -78,15 +84,42 @@ class AuthService {
       user.password,
       userFound.password
     );
-
     if (!validPassword) {
       result.message = "Invalid credentials.";
       result.result = ResultStatus.Error;
       return result;
     }
 
-    result.token = this.jwtService.createJwtToken(userFound);
+    const payload: object = {
+      email: userFound.email,
+    };
+    result.token = this.jwtService.createJwtToken(payload, Times.Day);
 
+    return result;
+  }
+
+  async activate(activationCode: string): Promise<Result> {
+    const result: Result = {
+      message: "User activated.",
+      result: ResultStatus.Success,
+    };
+
+    const userFound = await UserModel.findOne<User>({ activationCode }).exec();
+
+    if (!userFound) {
+      result.result = ResultStatus.Error;
+      result.message = "Invalid link.";
+    }
+
+    const userUpdated = await UserModel.updateOne(
+      { _id: userFound?._id },
+      { activated: true, activationCode: null }
+    );
+
+    if (!userUpdated.acknowledged) {
+      result.result = ResultStatus.Error;
+      result.message = "Error, try again later.";
+    }
     return result;
   }
 }

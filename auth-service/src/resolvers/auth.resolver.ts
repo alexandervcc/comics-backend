@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args, Query, Arg } from "type-graphql";
+import { Resolver, Mutation, Args, Query, Arg, Authorized } from "type-graphql";
 import { LoginUserDto, User, UserDto } from "../dto/UserDto";
 import { Result, ResultDto } from "../dto/ResultDto";
 import Container from "typedi";
@@ -17,14 +17,16 @@ class AuthResolver {
     return await this.authService.signUp(userDto);
   }
 
-  @Query(() => User)
-  async getUserData(@Arg("id") _id: string) {
-    return this.authService.getUserById(_id);
+  @Query(() => TokenDto)
+  async logIn(@Args() userLoginData: LoginUserDto): Promise<TokenDto> {
+    return await this.authService.logIn(userLoginData);
   }
 
-  @Query(() => TokenDto)
-  async logIn(@Args() userLoginData: LoginUserDto) {
-    return this.authService.logIn(userLoginData);
+  @Query(() => ResultDto)
+  async activate(
+    @Arg("activationCode") activationCode: string
+  ): Promise<ResultDto> {
+    return await this.authService.activate(activationCode);
   }
 }
 

@@ -8,8 +8,7 @@ const schema = new mongoose.Schema({
       validator: function (email: string) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
       },
-      message: (res: ValidatorProps) =>
-        `${res.value} is not a valid email!`,
+      message: (res: ValidatorProps) => `${res.value} is not a valid email!`,
     },
   },
   password: {
@@ -25,6 +24,10 @@ const schema = new mongoose.Schema({
     type: Boolean,
     required: true,
     default: false,
+  },
+  activationCode: {
+    type: String,
+    required: false,
   },
 });
 

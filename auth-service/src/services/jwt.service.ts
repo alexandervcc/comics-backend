@@ -7,9 +7,8 @@ import { ENV } from "../env";
 class JwtService {
   constructor() {}
 
-  createJwtToken(user: User) {
-    const payload = { _id: user._id, username: user.username };
-    return jwt.sign(payload, ENV.JWT_SECRET, { expiresIn: "24h" });
+  createJwtToken(payload: object, expiresIn: number) {
+    return jwt.sign(payload, ENV.JWT_SECRET, { expiresIn });
   }
 }
 

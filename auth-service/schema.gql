@@ -8,7 +8,7 @@ type Mutation {
 }
 
 type Query {
-  getUserData(id: String!): User!
+  activate(activationCode: String!): ResultDto!
   logIn(password: String!, username: String!): TokenDto!
 }
 
@@ -21,10 +21,4 @@ type TokenDto {
   message: String!
   result: String!
   token: String
-}
-
-type User {
-  _id: ID!
-  email: String!
-  username: String!
 }

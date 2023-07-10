@@ -13,16 +13,20 @@ import {
 import { useServer } from "graphql-ws/lib/use/ws";
 import { WebSocketServer } from "ws";
 import { redisConnection } from "./config/redis-pubsub";
-import { resolvers } from "./resolvers";
+
+// Graphql 
+import { customAuthChecker } from "./middleware/AuthGraphql";
+import AuthResolver from "./resolvers/auth.resolver";
 
 export const startServer = async () => {
   const redisSubPub = await redisConnection();
 
   const schema = await buildSchema({
-    resolvers,
+    resolvers: [AuthResolver],
     pubSub: redisSubPub,
     emitSchemaFile: true,
     validate: { forbidUnknownValues: false },
+    authChecker: customAuthChecker,
   });
 
   const app = express();

@@ -2,7 +2,7 @@ import { Field, ObjectType } from "type-graphql";
 import { ResultStatus } from "../types/enums/Result";
 
 export interface Result {
-  result: string;
+  result: ResultStatus;
   message: string;
 }
 
