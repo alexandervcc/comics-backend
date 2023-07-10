@@ -20,7 +20,7 @@ type ResultDto {
 type TokenDto {
   message: String!
   result: String!
-  token: String!
+  token: String
 }
 
 type User {

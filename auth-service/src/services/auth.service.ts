@@ -10,12 +10,11 @@ import { LoginUserDto, UserDto } from "../dto/UserDto";
 import { TokenDto } from "../dto/TokenDto";
 import { Result } from "../dto/ResultDto";
 
-import { AuthServiceI } from "./interfaces/auth-service";
 import { ResultStatus } from "../types/enums/Result";
 import { User } from "../types/interfaces/User";
 
 @Service()
-class AuthService implements AuthServiceI {
+class AuthService {
   constructor(
     @Inject() private kafkaProducer: KafkaProducer,
     @Inject() private passwordService: PasswordService,
@@ -75,7 +74,7 @@ class AuthService implements AuthServiceI {
       return result;
     }
 
-    const validPassword = this.passwordService.validatePassword(
+    const validPassword = await this.passwordService.validatePassword(
       user.password,
       userFound.password
     );

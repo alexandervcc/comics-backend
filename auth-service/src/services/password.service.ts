@@ -13,10 +13,10 @@ class PasswordService {
   }
 
   async validatePassword(
-    password: string,
+    clearPassword: string,
     hashedPassword: string
   ): Promise<boolean> {
-    return await bcrypt.compare(password, hashedPassword);
+    return await bcrypt.compare(clearPassword, hashedPassword);
   }
 }
 

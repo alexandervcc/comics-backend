@@ -3,6 +3,6 @@ import { ResultDto } from "./ResultDto";
 
 @ObjectType()
 export class TokenDto extends ResultDto {
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   token?: string;
 }

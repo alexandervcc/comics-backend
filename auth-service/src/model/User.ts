@@ -19,7 +19,7 @@ const schema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    minLength: [8, "Username too short"],
+    minLength: [5, "Username too short"],
   },
   activated: {
     type: Boolean,

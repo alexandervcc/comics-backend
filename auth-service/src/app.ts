@@ -22,6 +22,7 @@ export const startServer = async () => {
     resolvers,
     pubSub: redisSubPub,
     emitSchemaFile: true,
+    validate: { forbidUnknownValues: false },
   });
 
   const app = express();

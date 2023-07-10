@@ -5,15 +5,11 @@ import { ENV } from "../env";
 
 @Service()
 class JwtService {
-  private readonly secret: string;
-
-  constructor() {
-    this.secret = ENV.SECRET;
-  }
+  constructor() {}
 
   createJwtToken(user: User) {
     const payload = { _id: user._id, username: user.username };
-    return jwt.sign(payload, this.secret, { expiresIn: "24h" });
+    return jwt.sign(payload, ENV.JWT_SECRET, { expiresIn: "24h" });
   }
 }
 

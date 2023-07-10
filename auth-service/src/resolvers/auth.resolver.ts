@@ -13,7 +13,7 @@ class AuthResolver {
   }
 
   @Mutation(() => ResultDto)
-  async signUp(@Args({ validate: false }) userDto: UserDto): Promise<Result> {
+  async signUp(@Args() userDto: UserDto): Promise<Result> {
     return await this.authService.signUp(userDto);
   }
 
