@@ -8,9 +8,10 @@ import { AuthGuard } from './guards/auth.guard';
 import { LoggingInterceptor } from './interceptor/logging.interceptor';
 import { FreezePipe } from './pipes/freeze.pipe';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
+import { KafkaModule } from './kafka/kafka.module';
 
 @Module({
-  imports: [],
+  imports: [KafkaModule],
   controllers: [AppController],
   providers: [
     AppService,
