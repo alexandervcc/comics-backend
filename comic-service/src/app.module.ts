@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module, NestModule, Scope } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 
-import { KafkaModule } from './kafka/kafka.module';
+import { KafkaModule } from './modules/kafka/kafka.module';
 
 import { AppController } from './app.controller';
 
@@ -16,10 +16,16 @@ import { AuthGuard } from './guards/auth.guard';
 import { LoggingInterceptor } from './interceptor/logging.interceptor';
 
 import { HttpExceptionFilter } from './filters/http-exception.filter';
+import { ComicsController } from './comics/comics.controller';
+import { ComicsModule } from './comics/comics.module';
 
 @Module({
-  imports: [KafkaModule, ConfigModule.forRoot({ isGlobal: true })],
-  controllers: [AppController],
+  imports: [
+    KafkaModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    ComicsModule,
+  ],
+  controllers: [AppController, ComicsController],
   providers: [
     AppService,
     RequestService,
