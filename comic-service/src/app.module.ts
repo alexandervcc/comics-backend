@@ -2,14 +2,15 @@ import {
   MiddlewareConsumer,
   Module,
   NestModule,
-  RequestMethod,
+  Scope,
 } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RequestService } from './request.service';
 import { AuthenticationMiddleware } from './middleware/authentication.middleware';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthGuard } from './guards/auth.guard';
+import { LoggingInterceptor } from './interceptor/logging.interceptor';
 
 @Module({
   imports: [],
@@ -20,6 +21,11 @@ import { AuthGuard } from './guards/auth.guard';
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+      scope: Scope.REQUEST,
     },
   ],
 })

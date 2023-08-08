@@ -7,6 +7,7 @@ export class AppController {
 
   @Get()
   //@UseGuards(AuthGuard)
+  //@UseInterceptors(LoggingInterceptor)
   getHello(): string {
     return this.appService.getHello();
   }
