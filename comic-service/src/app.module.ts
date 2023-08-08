@@ -1,17 +1,24 @@
 import { MiddlewareConsumer, Module, NestModule, Scope } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { RequestService } from './request.service';
-import { AuthenticationMiddleware } from './middleware/authentication.middleware';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
-import { AuthGuard } from './guards/auth.guard';
-import { LoggingInterceptor } from './interceptor/logging.interceptor';
-import { FreezePipe } from './pipes/freeze.pipe';
-import { HttpExceptionFilter } from './filters/http-exception.filter';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ConfigModule } from '@nestjs/config';
+
 import { KafkaModule } from './kafka/kafka.module';
 
+import { AppController } from './app.controller';
+
+import { RequestService } from './request.service';
+import { AppService } from './app.service';
+
+import { AuthenticationMiddleware } from './middleware/authentication.middleware';
+
+import { AuthGuard } from './guards/auth.guard';
+
+import { LoggingInterceptor } from './interceptor/logging.interceptor';
+
+import { HttpExceptionFilter } from './filters/http-exception.filter';
+
 @Module({
-  imports: [KafkaModule],
+  imports: [KafkaModule, ConfigModule.forRoot({ isGlobal: true })],
   controllers: [AppController],
   providers: [
     AppService,
