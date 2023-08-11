@@ -25,7 +25,7 @@ import { ComicsModule } from './comics/comics.module';
     ConfigModule.forRoot({ isGlobal: true }),
     ComicsModule,
   ],
-  controllers: [AppController, ComicsController],
+  controllers: [AppController],
   providers: [
     AppService,
     RequestService,

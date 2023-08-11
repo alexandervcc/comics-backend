@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ComicsService } from './comics.service';
 
-@Controller('comics')
+@Controller('comic')
 export class ComicsController {
   constructor(private comicsService: ComicsService) {}
 
@@ -10,3 +10,4 @@ export class ComicsController {
     return this.comicsService.createNewComic(comic);
   }
 }
+ 

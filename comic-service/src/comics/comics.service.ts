@@ -19,8 +19,9 @@ export class ComicsService implements OnModuleInit {
       topic: KafkaTopics.NewComic,
       messages: [
         {
-          value:
-            'Creating comic, once it has passed moderation. You will receive a new confirmation.',
+          value: `Creating comic, once it has passed moderation. You will receive a new confirmation. ${JSON.stringify(
+            comic,
+          )}`,
         },
       ],
     });
@@ -28,7 +29,7 @@ export class ComicsService implements OnModuleInit {
 
   async onModuleInit() {
     await this.kafkaConsumer.consume(
-      { topics: [KafkaTopics.NewChapter] },
+      { topics: [KafkaTopics.NewChapter, KafkaTopics.NewComic] },
       {
         eachMessage: async ({ topic, partition, message }) => {
           this.logger.log(`Message consumed from topic ${topic} with payload: 
