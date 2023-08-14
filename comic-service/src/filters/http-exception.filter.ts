@@ -19,6 +19,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       status,
       timestamp: new Date().toISOString(),
       path: request.url,
+      error:'Custom Http Error test'
     });
   }
 }
