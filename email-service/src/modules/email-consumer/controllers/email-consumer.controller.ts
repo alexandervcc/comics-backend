@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
-import { EmailConsumerService } from './email-consumer.service';
-import { EmailDto } from 'src/model/EmailDto';
+import { EmailDto } from 'src/modules/email-consumer/dto/EmailDto';
+import { EmailConsumerService } from 'src/modules/email-consumer/services/email-consumer.service';
 
 @Controller()
 export class EmailConsumerController {

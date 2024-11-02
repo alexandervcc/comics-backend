@@ -10,12 +10,11 @@ async function bootstrap() {
       options: {
         client: {
           brokers: ['localhost:9092'],
-        }, 
-        consumer: { 
+        },
+        consumer: {
           groupId: 'email-sender',
         },
       },
-
     },
   );
   await app.listen();
