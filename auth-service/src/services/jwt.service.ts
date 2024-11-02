@@ -1,5 +1,5 @@
 import { Service } from "typedi";
-import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { ENV } from "../env";
 import { TokenStatus } from "../types/enums/TokenStatus";
 import { currenHour } from "../utils/time";
@@ -15,7 +15,7 @@ class JwtService {
   isValidToken(token: string): TokenStatus {
     try {
       const decodedToken = jwt.decode(token) as JwtPayload;
-      if (decodedToken.exp!! > currenHour()) {
+      if (decodedToken.exp != null && decodedToken.exp > currenHour()) {
         return TokenStatus.Expired;
       }
     } catch (error) {
