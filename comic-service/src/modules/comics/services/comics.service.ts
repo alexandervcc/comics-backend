@@ -1,9 +1,10 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-import KafkaTopics from '../constants/kafka-topics';
-import { ConsumerService } from '../modules/kafka/consumer/consumer.service';
-import { ProducerService } from '../modules/kafka/producer/producer.service';
+import { ProducerService } from '../../kafka/producer/producer.service';
+import { ConsumerService } from '../../kafka/consumer/consumer.service';
+import KafkaTopics from 'src/constants/kafka-topics';
+import { ComicDataDto } from '../dto/ComicData';
 
 @Injectable()
 export class ComicsService implements OnModuleInit {
@@ -14,18 +15,16 @@ export class ComicsService implements OnModuleInit {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  async createNewComic(comic: { [key: string]: unknown }) {
-    //Check DB
-    this.logger.log(`Creating comic ${comic}`);
-    const idNewComic = JSON.stringify(comic);
-    await this.cacheManager.set(idNewComic, comic);
-    const cachedComic = await this.cacheManager.get(idNewComic);
-    if (cachedComic) {
-      this.logger.debug(
-        `Cached value retrieved: ${JSON.stringify(cachedComic)}`,
-      );
-    }
+  async createNewComic(comic: ComicDataDto) {
+    this.logger.log('Creating comic', { comic });
 
+    const idNewComic = JSON.stringify(comic);
+
+    await this.cacheManager.set(idNewComic, comic);
+
+    // Save into DB, use mongoose
+
+    // Move this logic into an emailer service
     await this.kafkaProducer.produce({
       topic: KafkaTopics.NewComic,
       messages: [
@@ -38,8 +37,13 @@ export class ComicsService implements OnModuleInit {
     });
   }
 
+  async getComic(id: string): Promise<ComicDataDto> {
+    throw new Error('Method not implemented.');
+  }
+
   async onModuleInit() {
     await this.kafkaConsumer.consume(
+      // TODO: Check what & when to consume a topic
       { topics: [KafkaTopics.NewChapter, KafkaTopics.NewComic] },
       {
         eachMessage: async ({ topic, partition, message }) => {
@@ -50,6 +54,4 @@ export class ComicsService implements OnModuleInit {
       },
     );
   }
-
-  async newChapterCreated() {}
 }

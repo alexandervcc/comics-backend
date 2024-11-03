@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ComicsService } from './comics.service';
-import { ComicsController } from './comics.controller';
+import { ComicsService } from './services/comics.service';
+import { ComicsController } from './controllers/comics.controller';
 import { KafkaModule } from 'src/modules/kafka/kafka.module';
 
 @Module({
