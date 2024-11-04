@@ -4,6 +4,7 @@ import { ComicsController } from './controllers/comics.controller';
 import { KafkaModule } from 'src/modules/kafka/kafka.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ComicModel, ComicSchema } from './model/Comic';
+import { ComicDao } from './dao/comic.dao';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { ComicModel, ComicSchema } from './model/Comic';
     MongooseModule.forFeature([{ name: ComicModel.name, schema: ComicSchema }]),
   ],
   controllers: [ComicsController],
-  providers: [ComicsService],
+  providers: [ComicsService, ComicDao],
 })
 export class ComicsModule {}

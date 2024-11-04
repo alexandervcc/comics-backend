@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule, Scope } from '@nestjs/common';
-import { CacheModule } from '@nestjs/cache-manager';
+import { CacheModule, CacheStore } from '@nestjs/cache-manager';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { KafkaModule } from './modules/kafka/kafka.module';
@@ -10,19 +10,27 @@ import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { redisStore } from 'cache-manager-redis-store';
 import { ComicsModule } from './modules/comics/comics.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { RequestService } from './request.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    // TODO: update to use config service
-    MongooseModule.forRoot('mongodb://localhost/nest'),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+      }),
+      inject: [ConfigService],
+    }),
     CacheModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
-        const passphrase = configService.get<string>('REDIS_PASS');
+        const store = await redisStore({
+          url: configService.get<string>('REDIS_PASS'),
+        });
         return {
-          store: redisStore,
-          url: `redis://:${passphrase}@localhost:6379`,
+          store: store as unknown as CacheStore,
+          ttl: 3 * 60000,
           isGlobal: true,
         };
       },
@@ -34,6 +42,7 @@ import { MongooseModule } from '@nestjs/mongoose';
   ],
   controllers: [],
   providers: [
+    RequestService,
     { provide: APP_GUARD, useClass: AuthGuard },
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
     {
