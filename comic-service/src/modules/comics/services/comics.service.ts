@@ -5,6 +5,7 @@ import { ProducerService } from '../../kafka/producer/producer.service';
 import { ConsumerService } from '../../kafka/consumer/consumer.service';
 import KafkaTopics from 'src/constants/kafka-topics';
 import { ComicDataDto } from '../dto/ComicData';
+import { ComicDao } from '../dao/comic.dao';
 
 @Injectable()
 export class ComicsService implements OnModuleInit {
@@ -13,16 +14,16 @@ export class ComicsService implements OnModuleInit {
     private kafkaProducer: ProducerService,
     private kafkaConsumer: ConsumerService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly comicDao: ComicDao,
   ) {}
 
   async createNewComic(comic: ComicDataDto) {
     this.logger.log('Creating comic', { comic });
 
-    const idNewComic = JSON.stringify(comic);
-
-    await this.cacheManager.set(idNewComic, comic);
-
     // Save into DB, use mongoose
+    const newComic = await this.comicDao.createComic(comic);
+
+    await this.cacheManager.set(newComic._id.toString(), comic);
 
     // Move this logic into an emailer service
     await this.kafkaProducer.produce({

@@ -9,10 +9,13 @@ import { LoggingInterceptor } from './interceptor/logging.interceptor';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { redisStore } from 'cache-manager-redis-store';
 import { ComicsModule } from './modules/comics/comics.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    // TODO: update to use config service
+    MongooseModule.forRoot('mongodb://localhost/nest'),
     CacheModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {

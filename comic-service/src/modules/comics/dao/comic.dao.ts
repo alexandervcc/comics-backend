@@ -1,0 +1,18 @@
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { ComicModel } from '../model/Comic';
+import { Model } from 'mongoose';
+import { ComicDataDto } from '../dto/ComicData';
+
+@Injectable()
+export class ComicDao {
+  constructor(
+    @InjectModel(ComicModel.name)
+    private readonly comicModel: Model<ComicModel>,
+  ) {}
+
+  async createComic(comic: ComicDataDto) {
+    const newComic = new this.comicModel(comic);
+    return newComic.save();
+  }
+}
