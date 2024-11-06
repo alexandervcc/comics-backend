@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { ComicsService } from '../services/comics.service';
 import { ComicDataDto } from '../dto/ComicData';
 
@@ -14,5 +14,10 @@ export class ComicsController {
   @Get('/:id')
   async getComicData(@Param('id') id: string): Promise<ComicDataDto> {
     return this.comicsService.getComic(id);
+  }
+
+  @Put('/:id')
+  async updateComic(@Param('id') id: string, @Body() data: ComicDataDto) {
+    return this.comicsService.updateComic(id, data);
   }
 }

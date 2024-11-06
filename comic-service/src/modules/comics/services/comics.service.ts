@@ -6,6 +6,7 @@ import { ConsumerService } from '../../kafka/consumer/consumer.service';
 import KafkaTopics from 'src/constants/kafka-topics';
 import { ComicDataDto } from '../dto/ComicData';
 import { ComicDao } from '../dao/comic.dao';
+import { ComicModel } from '../model/Comic';
 
 @Injectable()
 export class ComicsService implements OnModuleInit {
@@ -39,7 +40,33 @@ export class ComicsService implements OnModuleInit {
   }
 
   async getComic(id: string): Promise<ComicDataDto> {
-    throw new Error('Method not implemented.');
+    const comic = await this.comicDao.getComic(id);
+    if (comic == null) {
+      this.logger.log('No comic was found', { id });
+      return null;
+    }
+    return comic;
+  }
+
+  async updateComic(id: string, comicData: ComicDataDto): Promise<ComicModel> {
+    const comic = await this.getComic(id);
+    if (comic == null) {
+      return null;
+    }
+    const cleanUpdate = Object.keys(comicData).reduce((prev, key) => {
+      if (comic[key] == null) {
+        return prev;
+      }
+      return {
+        ...prev,
+        key: comic[key],
+      };
+    }, {}) as ComicDataDto;
+    if (Object.keys(cleanUpdate).length === 0) {
+      this.logger.error('No defined attributes were passed to update comic.');
+      return null;
+    }
+    return this.comicDao.updateComic(id, cleanUpdate);
   }
 
   async onModuleInit() {

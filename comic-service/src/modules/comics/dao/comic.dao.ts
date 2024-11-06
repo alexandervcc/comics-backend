@@ -15,4 +15,14 @@ export class ComicDao {
     const newComic = new this.comicModel(comic);
     return newComic.save();
   }
+
+  async getComic(id: string) {
+    return this.comicModel.findById(id).exec();
+  }
+
+  async updateComic(_id: string, data: ComicDataDto) {
+    return this.comicModel
+      .findOneAndUpdate({ _id }, { $set: { ...data } }, { new: true })
+      .exec();
+  }
 }
