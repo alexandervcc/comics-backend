@@ -11,6 +11,7 @@ import { redisStore } from 'cache-manager-redis-store';
 import { ComicsModule } from './modules/comics/comics.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { RequestService } from './request.service';
+import { AuthorModule } from './modules/author/author.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { RequestService } from './request.service';
     }),
     KafkaModule,
     ComicsModule,
+    AuthorModule,
   ],
   controllers: [],
   providers: [
