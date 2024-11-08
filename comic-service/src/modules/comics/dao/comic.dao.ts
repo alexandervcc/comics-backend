@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ComicModel } from '../model/Comic';
+import { ComicModel } from '../model/comic';
 import { Model } from 'mongoose';
 import { ComicDataDto } from '../dto/ComicData';
 

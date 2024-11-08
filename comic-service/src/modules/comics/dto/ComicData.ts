@@ -1,4 +1,4 @@
-import { ComicData } from '../model/Comic';
+import { ComicData } from '../model/comic';
 
 export class ComicDataDto implements ComicData {
   name: string;
