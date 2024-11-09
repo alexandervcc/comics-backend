@@ -1,12 +1,20 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  OnModuleInit,
+} from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { ProducerService } from '../../kafka/producer/producer.service';
 import { ConsumerService } from '../../kafka/consumer/consumer.service';
 import KafkaTopics from 'src/constants/kafka-topics';
 import { ComicDataDto } from '../dto/ComicData';
 import { ComicDao } from '../dao/comic.dao';
-import { ComicModel } from '../model/comic';
+import { ComicData, ComicModel } from '../model/comic';
+import { AuthorService } from 'src/modules/author/services/author.service';
 
 @Injectable()
 export class ComicsService implements OnModuleInit {
@@ -16,12 +24,26 @@ export class ComicsService implements OnModuleInit {
     private kafkaConsumer: ConsumerService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly comicDao: ComicDao,
+    private readonly authorService: AuthorService,
   ) {}
 
-  async createNewComic(comic: ComicDataDto) {
+  async createNewComic(comic: ComicDataDto): Promise<ComicData> {
     this.logger.log('Creating comic', { comic });
 
-    // Save into DB, use mongoose
+    const authors = await Promise.all(
+      comic.author.map((authorId: string) =>
+        this.authorService.getAuthorById(authorId),
+      ),
+    );
+
+    if (authors.find((a) => a == null)) {
+      this.logger.log(
+        'A provided authot does not exists, comic cannot be created.',
+        { comic },
+      );
+      throw new HttpException('Invalid author.', HttpStatus.BAD_REQUEST);
+    }
+
     const newComic = await this.comicDao.createComic(comic);
 
     await this.cacheManager.set(newComic._id.toString(), comic);
@@ -37,6 +59,8 @@ export class ComicsService implements OnModuleInit {
         },
       ],
     });
+
+    return newComic;
   }
 
   async getComic(id: string): Promise<ComicDataDto> {

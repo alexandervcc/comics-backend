@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ObjectId } from 'mongoose';
 
 export interface ComicData {
+  _id: ObjectId;
   name: string;
   genre: string[];
   author: string[];
@@ -8,6 +10,8 @@ export interface ComicData {
 
 @Schema()
 export class ComicModel implements ComicData {
+  _id: ObjectId;
+
   @Prop()
   name: string;
 

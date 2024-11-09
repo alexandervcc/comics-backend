@@ -9,4 +9,8 @@ export class AuthorDao {
     @InjectModel(AuthorModel.name)
     private readonly authorModel: Model<AuthorModel>,
   ) {}
+
+  async getAuthorById(id: string) {
+    return this.authorModel.findById(id).exec();
+  }
 }
