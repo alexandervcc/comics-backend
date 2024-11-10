@@ -5,11 +5,13 @@ import { KafkaModule } from 'src/modules/kafka/kafka.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ComicModel, ComicSchema } from './model/comic';
 import { ComicDao } from './dao/comic.dao';
+import { AuthorModule } from 'src/modules/author/author.module';
 
 @Module({
   imports: [
     KafkaModule,
     MongooseModule.forFeature([{ name: ComicModel.name, schema: ComicSchema }]),
+    AuthorModule,
   ],
   controllers: [ComicsController],
   providers: [ComicsService, ComicDao],

@@ -19,7 +19,8 @@ import { AuthorModule } from './modules/author/author.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI'),
+
+        uri: configService.get<string>('MONGO_URI'),
       }),
       inject: [ConfigService],
     }),
@@ -27,7 +28,11 @@ import { AuthorModule } from './modules/author/author.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
         const store = await redisStore({
-          url: configService.get<string>('REDIS_PASS'),
+          socket: {
+            host: configService.get<string>('REDIS_HOST'),
+            port: configService.get<number>('REDIS_PORT'),
+            passphrase: configService.get<string>('REDIS_PASS'),
+          },
         });
         return {
           store: store as unknown as CacheStore,

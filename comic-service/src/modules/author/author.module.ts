@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthorModel, AuthorSchema } from './model/author';
+import { AuthorController } from 'src/modules/author/controllers/author.controller';
+import { AuthorService } from 'src/modules/author/services/author.service';
+import { AuthorDao } from 'src/modules/author/dao/author.dao';
 
 @Module({
   imports: [
@@ -8,7 +11,8 @@ import { AuthorModel, AuthorSchema } from './model/author';
       { name: AuthorModel.name, schema: AuthorSchema },
     ]),
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AuthorController],
+  providers: [AuthorService, AuthorDao],
+  exports: [AuthorService],
 })
 export class AuthorModule {}
