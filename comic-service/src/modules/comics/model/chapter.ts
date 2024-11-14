@@ -7,6 +7,7 @@ export interface ChapterData {
   episode: number;
   pages: string[];
   comic: ObjectId;
+  description: string;
 }
 
 @Schema()
@@ -15,6 +16,9 @@ export class ChapterModel implements ChapterData {
 
   @Prop()
   name: string;
+
+  @Prop()
+  description: string;
 
   @Prop()
   episode: number;

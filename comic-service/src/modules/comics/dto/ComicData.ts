@@ -9,6 +9,7 @@ export class ComicDataDto implements ComicData {
   @IsNotEmpty()
   name: string;
 
+  // TODO: update list of valid genres
   @IsIn(['shonen'])
   @ArrayNotEmpty()
   genre: string[];
