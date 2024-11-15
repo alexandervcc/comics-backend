@@ -67,7 +67,10 @@ export class ComicsService implements OnModuleInit {
     const comic = await this.comicDao.getComic(id);
     if (comic == null) {
       this.logger.log('No comic was found', { id });
-      return null;
+      throw new HttpException(
+        'No comic found for the provided id.',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return comic;
   }

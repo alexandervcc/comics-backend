@@ -31,3 +31,8 @@ export class ChapterModel implements ChapterData {
 }
 
 export const ChapterSchema = SchemaFactory.createForClass(ChapterModel);
+
+ChapterSchema.index(
+  { comic: 1, episode: 1 },
+  { unique: true, name: 'unique_episode_by_comic' },
+);
