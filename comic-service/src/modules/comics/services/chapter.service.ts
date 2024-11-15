@@ -1,12 +1,13 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ChapterDao } from '../dao/chapter.dao';
-import { CreateChapterDto } from '../dto/ChapterDto';
+import { CreateChapterDto } from '../dto/chapter.dto';
 import { ChapterData } from '../model/chapter';
 import { ComicsService } from './comics.service';
 
 @Injectable()
 export class ChapterService {
   private logger = new Logger(ChapterService.name);
+
   constructor(
     private readonly chapterDao: ChapterDao,
     private readonly comicService: ComicsService,
@@ -32,5 +33,19 @@ export class ChapterService {
     this.logger.log('Chapter created.', { chapterData });
 
     return newChapter;
+  }
+
+  async getChapter(id: string) {
+    const chapter = await this.chapterDao.getChapterById(id);
+
+    if (chapter == null) {
+      this.logger.error('No chapter was found for the provided id.', { id });
+      throw new HttpException(
+        'No chapter was found for the provided id.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return chapter;
   }
 }
