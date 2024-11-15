@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { ChapterModel } from '../model/chapter';
-import { CreateChapterDto } from '../dto/ChapterDto';
+import { CreateChapterDto } from '../dto/chapter.dto';
 
 @Injectable()
 export class ChapterDao {

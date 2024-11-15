@@ -11,7 +11,7 @@ import { Cache } from 'cache-manager';
 import { ProducerService } from '../../kafka/producer/producer.service';
 import { ConsumerService } from '../../kafka/consumer/consumer.service';
 import KafkaTopics from 'src/constants/kafka-topics';
-import { ComicDataDto } from '../dto/ComicData';
+import { ComicDataDto } from '../dto/comic.dto';
 import { ComicDao } from '../dao/comic.dao';
 import { ComicData, ComicModel } from '../model/comic';
 import { AuthorService } from 'src/modules/author/services/author.service';

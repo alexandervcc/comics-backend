@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { ComicsService } from '../services/comics.service';
-import { ComicDataDto } from '../dto/ComicData';
+import { ComicDataDto } from '../dto/comic.dto';
 
 @Controller('api/v1/comic')
 export class ComicsController {

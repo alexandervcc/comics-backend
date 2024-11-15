@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ComicModel } from '../model/comic';
 import { Model } from 'mongoose';
-import { ComicDataDto } from '../dto/ComicData';
+import { ComicDataDto } from '../dto/comic.dto';
 
 @Injectable()
 export class ComicDao {
