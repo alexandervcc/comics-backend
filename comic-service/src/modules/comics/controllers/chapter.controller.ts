@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Param } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body } from '@nestjs/common';
 import { ChapterService } from '../services/chapter.service';
-import { CreateChapterDto } from '../dto/chapter.dto';
+import { AddPagesDto, CreateChapterDto } from '../dto/chapter.dto';
 
 @Controller('api/v1/chapter')
 export class ChapterController {
@@ -9,6 +9,11 @@ export class ChapterController {
   @Post()
   async createChapter(chapterData: CreateChapterDto) {
     return this.chapterService.createChapter(chapterData);
+  }
+
+  @Post('/pages')
+  async addPagesToChapter(@Body() data: AddPagesDto) {
+    return this.chapterService.addPagesToChapter(data);
   }
 
   @Get('/:id')
