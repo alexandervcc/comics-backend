@@ -7,7 +7,7 @@ import {
   Logger,
   OnModuleInit,
 } from '@nestjs/common';
-import { CacheManagerStore } from 'cache-manager';
+import { Cache } from 'cache-manager';
 import { ProducerService } from '../../kafka/producer/producer.service';
 import { ConsumerService } from '../../kafka/consumer/consumer.service';
 import { ComicDataDto } from '../dto/comic.dto';
@@ -22,7 +22,7 @@ export class ComicsService implements OnModuleInit {
   constructor(
     private kafkaProducer: ProducerService,
     private kafkaConsumer: ConsumerService,
-    @Inject(CACHE_MANAGER) private cacheManager: CacheManagerStore,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly comicDao: ComicDao,
     private readonly authorService: AuthorService,
   ) {}

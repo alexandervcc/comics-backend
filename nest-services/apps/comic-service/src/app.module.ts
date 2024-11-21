@@ -2,16 +2,18 @@ import { MiddlewareConsumer, Module, NestModule, Scope } from '@nestjs/common';
 import { CacheModule, CacheStore } from '@nestjs/cache-manager';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+
+import { redisStore } from 'cache-manager-redis-store';
+
+import { ComicsModule } from './modules/comics/comics.module';
+import { AuthorModule } from './modules/author/author.module';
 import { KafkaModule } from './modules/kafka/kafka.module';
 import { AuthenticationMiddleware } from './middleware/authentication.middleware';
 import { AuthGuard } from './guards/auth.guard';
 import { LoggingInterceptor } from './interceptor/logging.interceptor';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
-import { redisStore } from 'cache-manager-redis-store';
-import { ComicsModule } from './modules/comics/comics.module';
-import { MongooseModule } from '@nestjs/mongoose';
 import { RequestService } from './request.service';
-import { AuthorModule } from './modules/author/author.module';
 
 @Module({
   imports: [
@@ -35,7 +37,7 @@ import { AuthorModule } from './modules/author/author.module';
         });
         return {
           store: store as unknown as CacheStore,
-          ttl: 3 * 60000,
+          ttl: 60000,
           isGlobal: true,
         };
       },
