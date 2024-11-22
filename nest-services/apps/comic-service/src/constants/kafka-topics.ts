@@ -3,7 +3,7 @@ enum KafkaTopics {
   NewComic = 'email_comic-creating',
 
   //consume
-  NewChapter = 'comic_new-chapter'
+  NewChapter = 'comic_new-chapter',
 }
 
 export default KafkaTopics;
