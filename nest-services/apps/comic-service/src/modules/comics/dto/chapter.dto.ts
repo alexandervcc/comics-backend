@@ -1,4 +1,4 @@
-import { ObjectId, Schema } from 'mongoose';
+import { mongo } from 'mongoose';
 import {
   ArrayNotEmpty,
   IsNotEmpty,
@@ -22,7 +22,7 @@ export class CreateChapterDto implements Omit<ChapterData, 'pages' | '_id'> {
   episode: number;
 
   @IsNotEmpty()
-  comic: ObjectId;
+  comic: mongo.ObjectId;
 }
 
 export class AddPagesDto implements Pick<ChapterData, '_id' | 'pages'> {
@@ -30,5 +30,5 @@ export class AddPagesDto implements Pick<ChapterData, '_id' | 'pages'> {
   pages: string[];
 
   @IsNotEmpty()
-  _id: Schema.Types.ObjectId;
+  _id: mongo.ObjectId;
 }

@@ -13,8 +13,8 @@ import { ConsumerService } from '../../kafka/consumer/consumer.service';
 import { ComicDataDto } from '../dto/comic.dto';
 import { ComicDao } from '../dao/comic.dao';
 import { ComicData, ComicModel } from '../model/comic';
-import KafkaTopics from 'apps/comic-service/src/constants/kafka-topics';
 import { AuthorService } from '../../author/services/author.service';
+import KafkaTopics from '../../../constants/kafka-topics';
 
 @Injectable()
 export class ComicsService implements OnModuleInit {

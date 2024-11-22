@@ -1,18 +1,18 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ObjectId } from 'mongoose';
+import { mongo } from 'mongoose';
 
 export interface ChapterData {
-  _id: ObjectId;
+  _id: mongo.ObjectId;
   name: string;
   episode: number;
   pages: string[];
-  comic: ObjectId;
+  comic: mongo.ObjectId;
   description: string;
 }
 
 @Schema()
 export class ChapterModel implements ChapterData {
-  _id: ObjectId;
+  _id: mongo.ObjectId;
 
   @Prop()
   name: string;
@@ -26,8 +26,8 @@ export class ChapterModel implements ChapterData {
   @Prop()
   pages: string[];
 
-  @Prop()
-  comic: ObjectId;
+  @Prop({ type: mongo.ObjectId })
+  comic: mongo.ObjectId;
 }
 
 export const ChapterSchema = SchemaFactory.createForClass(ChapterModel);

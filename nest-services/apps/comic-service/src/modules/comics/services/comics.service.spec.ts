@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComicsService } from './comics.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { ConsumerService } from '../modules/kafka/consumer/consumer.service';
-import { ProducerService } from '../modules/kafka/producer/producer.service';
+import { ConsumerService } from '../../kafka/consumer/consumer.service';
+import { ProducerService } from '../../kafka/producer/producer.service';
+import { KafkaModule } from 'src/modules/kafka/kafka.module';
 
 describe('ComicsService', () => {
   let service: ComicsService;
@@ -24,7 +25,7 @@ describe('ComicsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-     // imports: [KafkaModule],
+      imports: [KafkaModule],
       providers: [
         ComicsService,
         { provide: CACHE_MANAGER, useValue: mockCacheManager },

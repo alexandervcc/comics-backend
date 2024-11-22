@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId, mongo } from 'mongoose';
+import { Model, mongo } from 'mongoose';
 import { ChapterModel } from '../model/chapter';
 import { CreateChapterDto } from '../dto/chapter.dto';
 
@@ -16,7 +16,7 @@ export class ChapterDao {
     return newComic.save();
   }
 
-  async getChapterByComicAndEpisode(comic: ObjectId, episode: number) {
+  async getChapterByComicAndEpisode(comic: mongo.ObjectId, episode: number) {
     return this.comicModel.findOne({ comic, episode });
   }
 
