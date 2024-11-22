@@ -10,23 +10,26 @@ export interface ChapterData {
   description: string;
 }
 
-@Schema()
+@Schema({
+  autoCreate: true,
+  collection: 'chapters',
+})
 export class ChapterModel implements ChapterData {
   _id: mongo.ObjectId;
 
-  @Prop()
+  @Prop({ required: true })
   name: string;
 
-  @Prop()
+  @Prop({ required: true })
   description: string;
 
-  @Prop()
+  @Prop({ required: true })
   episode: number;
 
-  @Prop()
+  @Prop({ required: true })
   pages: string[];
 
-  @Prop({ type: mongo.ObjectId })
+  @Prop({ required: true, type: mongo.ObjectId })
   comic: mongo.ObjectId;
 }
 

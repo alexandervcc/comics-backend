@@ -6,11 +6,14 @@ export interface AuthorData {
   name: string;
 }
 
-@Schema()
+@Schema({
+  autoCreate: true,
+  collection: 'authors',
+})
 export class AuthorModel implements AuthorData {
   _id: ObjectId;
 
-  @Prop()
+  @Prop({ required: true })
   name: string;
 }
 

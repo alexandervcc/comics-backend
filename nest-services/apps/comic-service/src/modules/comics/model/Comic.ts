@@ -8,17 +8,20 @@ export interface ComicData {
   author: string[];
 }
 
-@Schema()
+@Schema({
+  autoCreate: true,
+  collection: 'comics',
+})
 export class ComicModel implements ComicData {
   _id: ObjectId;
 
-  @Prop()
+  @Prop({ required: true })
   name: string;
 
-  @Prop()
+  @Prop({ required: true, default: [] })
   genre: string[];
 
-  @Prop()
+  @Prop({ required: true, default: [] })
   author: string[];
 }
 
