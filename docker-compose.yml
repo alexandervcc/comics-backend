@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   mysql:
     image: mysql
@@ -10,6 +10,8 @@ services:
       - MYSQL_DATABASE=graphql
       - MYSQL_USER=graphql
       - MYSQL_PASSWORD=graphql
+    profiles:
+      - testing
 
   redis:
     image: redis
@@ -19,6 +21,10 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass gql-subpub
     volumes:
       - cache:/data
+    networks:
+      - app-network
+    profiles:
+      - microservices
 
   mongodb:
     image: mongo
@@ -29,6 +35,10 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=micro-user
       - MONGO_INITDB_ROOT_PASSWORD=micro-user
       - MONGO_INITDB_DATABASE=micro-user
+    networks:
+      - app-network
+    profiles:
+      - microservices
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -38,7 +48,11 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-  
+    networks:
+      - app-network
+    profiles:
+      - microservices
+
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
@@ -48,12 +62,16 @@ services:
       - 9092:9092
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    networks:
+      - app-network
+    profiles:
+      - microservices
 
   kafka-ui:
     image: provectuslabs/kafka-ui
@@ -68,7 +86,13 @@ services:
     depends_on:
       - kafka
       - zookeeper
+    profiles:
+      - testing
 
 volumes:
   cache:
     driver: local
+
+networks:
+  app-network:
+    driver: bridge
