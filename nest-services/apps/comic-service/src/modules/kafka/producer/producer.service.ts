@@ -3,17 +3,21 @@ import {
   OnApplicationShutdown,
   OnModuleInit,
 } from '@nestjs/common';
-import { Kafka, ProducerRecord } from 'kafkajs';
+import { ConfigService } from '@nestjs/config';
+import { Kafka, Producer, ProducerRecord } from 'kafkajs';
 
 @Injectable()
 export class ProducerService implements OnModuleInit, OnApplicationShutdown {
-  private readonly kafka = new Kafka({
-    // TODO: use config module to set brokers
-    brokers: ['kafka:9092'],
-  });
-  private readonly producer = this.kafka.producer();
+  private kafka: Kafka;
+  private producer: Producer;
+
+  constructor(private readonly configService: ConfigService) {}
 
   async onModuleInit() {
+    this.kafka = new Kafka({
+      brokers: [this.configService.get<string>('KAFKA_BROKER')],
+    });
+    this.producer = this.kafka.producer();
     await this.producer.connect();
   }
 
@@ -21,6 +25,7 @@ export class ProducerService implements OnModuleInit, OnApplicationShutdown {
     await this.producer.send(record);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async onApplicationShutdown(signal?: string) {
     await this.producer.disconnect();
   }
