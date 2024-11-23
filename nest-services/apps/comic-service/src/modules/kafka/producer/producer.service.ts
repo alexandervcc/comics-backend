@@ -1,9 +1,11 @@
 import {
+  Inject,
   Injectable,
   OnApplicationShutdown,
   OnModuleInit,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
+import { configuration } from 'apps/comic-service/src/config/configuration';
 import { Kafka, Producer, ProducerRecord } from 'kafkajs';
 
 @Injectable()
@@ -11,11 +13,14 @@ export class ProducerService implements OnModuleInit, OnApplicationShutdown {
   private kafka: Kafka;
   private producer: Producer;
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    @Inject(configuration.KEY)
+    private config: ConfigType<typeof configuration>,
+  ) {}
 
   async onModuleInit() {
     this.kafka = new Kafka({
-      brokers: [this.configService.get<string>('KAFKA_BROKER')],
+      brokers: [this.config.kafka.broker],
     });
     this.producer = this.kafka.producer();
     await this.producer.connect();

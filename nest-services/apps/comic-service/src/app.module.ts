@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CacheModule, CacheStore } from '@nestjs/cache-manager';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigType } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { redisStore } from 'cache-manager-redis-store';
@@ -9,27 +9,30 @@ import { ComicsModule } from './modules/comics/comics.module';
 import { AuthorModule } from './modules/author/author.module';
 import { KafkaModule } from './modules/kafka/kafka.module';
 
+import { configuration } from './config/configuration';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      load: [configuration],
     }),
     MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URI'),
-        dbName: 'comics',
-      }),
-      inject: [ConfigService],
+      useFactory: (configService: ConfigType<typeof configuration>) => {
+        return {
+          uri: configService.mongo.uri,
+          dbName: configService.mongo.db,
+        };
+      },
+      inject: [configuration.KEY],
     }),
     CacheModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => {
+      useFactory: async (configService: ConfigType<typeof configuration>) => {
         const store = await redisStore({
           socket: {
-            host: configService.get<string>('REDIS_HOST'),
-            port: configService.get<number>('REDIS_PORT'),
-            passphrase: configService.get<string>('REDIS_PASS'),
+            host: configService.redis.host,
+            port: configService.redis.port,
+            passphrase: configService.redis.pass,
           },
         });
         return {
@@ -38,7 +41,7 @@ import { KafkaModule } from './modules/kafka/kafka.module';
           isGlobal: true,
         };
       },
-      inject: [ConfigService],
+      inject: [configuration.KEY],
       isGlobal: true,
     }),
     KafkaModule,
