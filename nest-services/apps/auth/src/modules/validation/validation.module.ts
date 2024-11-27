@@ -6,5 +6,6 @@ import PasswordService from './services/password.service';
   imports: [],
   controllers: [],
   providers: [JwtService, PasswordService],
+  exports: [JwtService, PasswordService],
 })
 export class ValidationModule {}
