@@ -4,10 +4,14 @@ import {
   Logger,
   HttpException,
   HttpStatus,
+  ForbiddenException,
 } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as sharp from 'sharp';
+import { ComicsService } from './comics.service';
+import { ChapterService } from './chapter.service';
+import { AddPagesToChapterDto } from '../dto/chapter.dto';
 
 @Injectable()
 export class ChapterImagesService {
@@ -17,12 +21,26 @@ export class ChapterImagesService {
     { width: 1920, height: 1080 },
     { width: 3840, height: 2160 },
   ];
+  private readonly resizeResolutions = [
+    { name: 'fullhd', width: 1920, height: 1080 },
+    { name: '4k', width: 3840, height: 2160 },
+    { name: 'mobile', width: 800, height: 600 },
+  ];
   private logger = new Logger(ChapterImagesService.name);
 
+  constructor(
+    private readonly chapterService: ChapterService,
+    private readonly comicService: ComicsService,
+  ) {}
+
   async handleUpload(
-    chapterId: string,
+    chapterData: AddPagesToChapterDto,
     files: Express.Multer.File[],
   ): Promise<void> {
+    const { authorId, chapterId, comicId } = chapterData;
+
+    await this.checkAuthorCanModifyChapter(authorId, comicId, chapterId);
+
     const chapterDir = this.getChapterDirectory(chapterId);
 
     await this.ensureDirectoryExists(chapterDir);
@@ -32,6 +50,22 @@ export class ChapterImagesService {
     await this.saveFiles(chapterDir, files);
 
     // TODO: Emit event to resize events for different screen sizes
+  }
+
+  //   async resizeAndSaveImages(chapterId: string) {}
+
+  private async checkAuthorCanModifyChapter(
+    authorId: string,
+    comicId: string,
+    chapterId: string,
+  ): Promise<void> {
+    const comic = await this.comicService.getComic(comicId);
+    if (!comic.author.includes(authorId)) {
+      throw new ForbiddenException(
+        'Chapter images cannot be added to provided comic',
+      );
+    }
+    await this.chapterService.getChapter(chapterId);
   }
 
   private validateFiles(files: Express.Multer.File[]): void {

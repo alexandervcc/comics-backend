@@ -5,9 +5,10 @@ import {
   Param,
   UseInterceptors,
   UploadedFiles,
+  Body,
 } from '@nestjs/common';
 import { ChapterService } from '../services/chapter.service';
-import { CreateChapterDto } from '../dto/chapter.dto';
+import { AddPagesToChapterDto, CreateChapterDto } from '../dto/chapter.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ChapterImagesService } from '../services/chapter-images.service';
 
@@ -23,13 +24,13 @@ export class ChapterController {
     return this.chapterService.createChapter(chapterData);
   }
 
-  @Post('/:comidId/pages')
+  @Post('/pages')
   @UseInterceptors(FilesInterceptor('images', 50))
   async addPagesToChapter(
-    @Param('id') chapterId: string,
     @UploadedFiles() files: Express.Multer.File[],
+    @Body() payload: AddPagesToChapterDto,
   ) {
-    return this.chapterImagesService.handleUpload(chapterId, files);
+    return this.chapterImagesService.handleUpload(payload, files);
   }
 
   @Get('/:id')

@@ -18,3 +18,14 @@ export class CreateChapterDto implements Omit<ChapterData, 'pages' | '_id'> {
   @IsNotEmpty()
   comic: mongo.ObjectId;
 }
+
+export class AddPagesToChapterDto {
+  @IsNotEmpty()
+  comicId: string;
+
+  @IsNotEmpty()
+  authorId: string;
+
+  @IsNotEmpty()
+  chapterId: string;
+}
