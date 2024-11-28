@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ChapterDao } from '../dao/chapter.dao';
-import { AddPagesDto, CreateChapterDto } from '../dto/chapter.dto';
+import { CreateChapterDto } from '../dto/chapter.dto';
 import { ChapterData } from '../model/chapter';
 import { ComicsService } from './comics.service';
 
@@ -45,34 +45,6 @@ export class ChapterService {
         HttpStatus.NOT_FOUND,
       );
     }
-
-    return chapter;
-  }
-
-  async addPagesToChapter(data: AddPagesDto) {
-    const chapter = await this.getChapter(data._id.toString());
-
-    const validPages = data.pages
-      .map((pageId) => {
-        // TODO: check if selected page was loaded into the system
-        // still is need to configure images storage
-        // this mock a successful page
-        return pageId;
-      })
-      .filter((page) => page != null);
-
-    if (validPages.length !== data.pages.length) {
-      this.logger.error('Some provided page does not exist.', { data });
-      throw new HttpException(
-        'Some provided page does not exist.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    chapter.pages = data.pages;
-    await chapter.save();
-
-    this.logger.log('Pages assigned to chapter.');
 
     return chapter;
   }

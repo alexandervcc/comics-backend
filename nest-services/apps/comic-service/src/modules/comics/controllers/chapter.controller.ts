@@ -1,19 +1,35 @@
-import { Controller, Get, Post, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  UseInterceptors,
+  UploadedFiles,
+} from '@nestjs/common';
 import { ChapterService } from '../services/chapter.service';
-import { AddPagesDto, CreateChapterDto } from '../dto/chapter.dto';
+import { CreateChapterDto } from '../dto/chapter.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { ChapterImagesService } from '../services/chapter-images.service';
 
 @Controller('api/v1/chapter')
 export class ChapterController {
-  constructor(private chapterService: ChapterService) {}
+  constructor(
+    private chapterService: ChapterService,
+    private chapterImagesService: ChapterImagesService,
+  ) {}
 
   @Post()
   async createChapter(chapterData: CreateChapterDto) {
     return this.chapterService.createChapter(chapterData);
   }
 
-  @Post('/pages')
-  async addPagesToChapter(@Body() data: AddPagesDto) {
-    return this.chapterService.addPagesToChapter(data);
+  @Post('/:comidId/pages')
+  @UseInterceptors(FilesInterceptor('images', 50))
+  async addPagesToChapter(
+    @Param('id') chapterId: string,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this.chapterImagesService.handleUpload(chapterId, files);
   }
 
   @Get('/:id')

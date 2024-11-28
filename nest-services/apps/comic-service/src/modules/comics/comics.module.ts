@@ -10,6 +10,7 @@ import { ChapterService } from './services/chapter.service';
 import { ChapterDao } from './dao/chapter.dao';
 import { KafkaModule } from '../kafka/kafka.module';
 import { AuthorModule } from '../author/author.module';
+import { ChapterImagesService } from './services/chapter-images.service';
 
 @Module({
   imports: [
@@ -21,6 +22,12 @@ import { AuthorModule } from '../author/author.module';
     AuthorModule,
   ],
   controllers: [ComicsController, ChapterController],
-  providers: [ComicsService, ComicDao, ChapterService, ChapterDao],
+  providers: [
+    ComicsService,
+    ComicDao,
+    ChapterService,
+    ChapterDao,
+    ChapterImagesService,
+  ],
 })
 export class ComicsModule {}
