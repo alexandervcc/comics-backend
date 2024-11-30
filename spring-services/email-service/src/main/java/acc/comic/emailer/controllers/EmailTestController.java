@@ -19,8 +19,8 @@ public class EmailTestController {
 
   @PostMapping("/send")
   public ResponseEntity<String> postMethodName(@RequestBody SendEmailRequestDto data) {
-    this.emailSenderService.sendEmail(data);
-    return ResponseEntity.ok().body("Email sent");
+    String result = this.emailSenderService.sendEmail(data);
+    return ResponseEntity.ok().body(result);
   }
 
 }
