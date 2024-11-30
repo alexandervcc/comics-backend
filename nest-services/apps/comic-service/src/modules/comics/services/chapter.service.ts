@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { ChapterDao } from '../dao/chapter.dao';
 import { CreateChapterDto } from '../dto/chapter.dto';
 import { ChapterData } from '../model/chapter';
@@ -47,5 +53,19 @@ export class ChapterService {
     }
 
     return chapter;
+  }
+
+  async checkAuthorCanModifyChapter(
+    authorId: string,
+    comicId: string,
+    chapterId: string,
+  ): Promise<void> {
+    const comic = await this.comicService.getComic(comicId);
+    if (!comic.author.includes(authorId)) {
+      throw new ForbiddenException(
+        'Chapter images cannot be added to provided comic',
+      );
+    }
+    await this.getChapter(chapterId);
   }
 }

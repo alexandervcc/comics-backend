@@ -1,36 +1,27 @@
-import {
-  Injectable,
-  BadRequestException,
-  Logger,
-  HttpException,
-  HttpStatus,
-  ForbiddenException,
-} from '@nestjs/common';
-import * as fs from 'fs';
-import * as path from 'path';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import * as sharp from 'sharp';
-import { ComicsService } from './comics.service';
 import { ChapterService } from './chapter.service';
 import { AddPagesToChapterDto } from '../dto/chapter.dto';
+import { ChapterLocalStorageService } from './chapter-local-storage.service';
+import { BufferFile } from './interfaces/chapter-storage.interface';
 
 @Injectable()
 export class ChapterImagesService {
-  private readonly uploadDir = './uploads/chapters';
   private readonly maxFileSize = 5 * 1024 * 1024;
   private readonly allowedResolutions = [
-    { width: 1920, height: 1080 },
-    { width: 3840, height: 2160 },
+    { width: 1080, height: 1920 },
+    { width: 2160, height: 3840 },
   ];
   private readonly resizeResolutions = [
-    { name: 'fullhd', width: 1920, height: 1080 },
-    { name: '4k', width: 3840, height: 2160 },
-    { name: 'mobile', width: 800, height: 600 },
+    { name: 'fullhd', width: 1080, height: 1920 },
+    { name: '4k', width: 2160, height: 3840 },
+    { name: 'mobile', width: 600, height: 800 },
   ];
   private logger = new Logger(ChapterImagesService.name);
 
   constructor(
     private readonly chapterService: ChapterService,
-    private readonly comicService: ComicsService,
+    private readonly localStorage: ChapterLocalStorageService,
   ) {}
 
   async handleUpload(
@@ -39,33 +30,52 @@ export class ChapterImagesService {
   ): Promise<void> {
     const { authorId, chapterId, comicId } = chapterData;
 
-    await this.checkAuthorCanModifyChapter(authorId, comicId, chapterId);
+    await this.chapterService.checkAuthorCanModifyChapter(
+      authorId,
+      comicId,
+      chapterId,
+    );
 
-    const chapterDir = this.getChapterDirectory(chapterId);
-
-    await this.ensureDirectoryExists(chapterDir);
+    const chapterDir = this.localStorage.getChapterDirectory(
+      chapterId,
+      'original',
+    );
 
     this.validateFiles(files);
 
-    await this.saveFiles(chapterDir, files);
+    await this.localStorage.saveFiles(chapterDir, files);
 
-    // TODO: Emit event to resize events for different screen sizes
+    // TODO: Emit event to resize events for different screen sizes, using Kafka
   }
 
-  //   async resizeAndSaveImages(chapterId: string) {}
+  // TODO: consume this resizing method throug Kafka
+  async resizeAndSaveImages(chapterId: string) {
+    const files = await this.localStorage.getPagesFromStorage(
+      chapterId,
+      'original',
+    );
+    for (const res of this.resizeResolutions) {
+      const resizedFiles: BufferFile[] = await Promise.all(
+        files.map(async (file) => {
+          const resizedFile = await sharp(file.filename)
+            .resize(res.width, res.height)
+            .toBuffer();
 
-  private async checkAuthorCanModifyChapter(
-    authorId: string,
-    comicId: string,
-    chapterId: string,
-  ): Promise<void> {
-    const comic = await this.comicService.getComic(comicId);
-    if (!comic.author.includes(authorId)) {
-      throw new ForbiddenException(
-        'Chapter images cannot be added to provided comic',
+          this.logger.log('Image resized.', { chapterId, res });
+
+          return {
+            filename: file.filename,
+            buffer: resizedFile,
+          };
+        }),
       );
+
+      const newFilePath = this.localStorage.getChapterDirectory(
+        chapterId,
+        res.name,
+      );
+      await this.localStorage.saveFiles(newFilePath, resizedFiles);
     }
-    await this.chapterService.getChapter(chapterId);
   }
 
   private validateFiles(files: Express.Multer.File[]): void {
@@ -86,38 +96,6 @@ export class ChapterImagesService {
           `File ${file.originalname} does not meet the required resolution (Full HD, 4K, or cellphone).`,
         );
       }
-    }
-  }
-
-  private async saveFiles(
-    chapterDir: string,
-    files: Express.Multer.File[],
-  ): Promise<void> {
-    try {
-      await Promise.all(
-        files.map((file) => {
-          const filePath = path.join(chapterDir, file.originalname);
-          fs.promises.writeFile(filePath, file.buffer);
-        }),
-      );
-      this.logger.log('Chapter images successfully saved.', { chapterDir });
-    } catch (error) {
-      throw new HttpException(
-        'Error saving images, try again later.',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  private getChapterDirectory(chapterId: string): string {
-    const chatperPath = path.join(this.uploadDir, chapterId);
-    this.logger.log('Chapter for images obtained.', { chatperPath, chapterId });
-    return chatperPath;
-  }
-
-  private async ensureDirectoryExists(dir: string): Promise<void> {
-    if (!fs.existsSync(dir)) {
-      await fs.promises.mkdir(dir, { recursive: true });
     }
   }
 }

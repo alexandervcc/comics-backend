@@ -11,6 +11,7 @@ import { ChapterDao } from './dao/chapter.dao';
 import { KafkaModule } from '../kafka/kafka.module';
 import { AuthorModule } from '../author/author.module';
 import { ChapterImagesService } from './services/chapter-images.service';
+import { ChapterLocalStorageService } from './services/chapter-local-storage.service';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ChapterImagesService } from './services/chapter-images.service';
     ChapterService,
     ChapterDao,
     ChapterImagesService,
+    ChapterLocalStorageService,
   ],
 })
 export class ComicsModule {}
