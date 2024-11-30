@@ -1,0 +1,28 @@
+spring:
+  profiles:
+    active:
+    - local
+
+  application:
+    name: email-service
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: "your-mail@gmail.com"
+    password: 'Your config'
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+management:
+  endpoints:
+    web: # Override /actuator subpath
+      base-path: /
+      # Configure which other endpoints to expose besides health
+      exposure:
+        include: health, info, metrics
