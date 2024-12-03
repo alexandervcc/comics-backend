@@ -7,7 +7,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import acc.comic.emailer.dto.SendEmailRequestDto;
+import acc.comic.emailer.dto.SendEmailRequestPayload;
 import jakarta.mail.internet.MimeMessage;
 
 @Service
@@ -20,7 +20,7 @@ public class EmailSenderService {
   public EmailSenderService(JavaMailSender javaMailSender) {
   }
 
-  public String sendEmail(SendEmailRequestDto payload) {
+  public String sendEmail(SendEmailRequestPayload payload) {
     try {
       MimeMessage message = mailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message);
