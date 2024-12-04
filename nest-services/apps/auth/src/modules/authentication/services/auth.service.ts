@@ -8,14 +8,22 @@ import { Result } from '../dto/ResultDto';
 import { Times } from '../../validation/utils.ts/time';
 import { UserModel } from '../schema/user';
 import { TokenDto } from '../dto/TokenDto';
+import { KafkaProducerService } from '../../kafka/services/kafka-producer.service';
 
 @Injectable()
 class AuthService {
   constructor(
+    private kafkaProducer: KafkaProducerService,
     private passwordService: PasswordService,
     private jwtService: JwtService,
     private userDao: UserDao,
-  ) {}
+  ) {
+    this.signUp({
+      email: 'alex.charco.25@gmail.com',
+      password: 'mijotronxdddd',
+      username: 'alexandervcc',
+    });
+  }
 
   async getUserById(_id: string): Promise<UserModel> {
     const user = this.userDao.findById(_id);
@@ -50,6 +58,13 @@ class AuthService {
       password: hashedPassword,
       active: false,
     });
+
+    await this.kafkaProducer.sendMessage('send.email', {
+      email: user.email,
+      subject: 'Activation email',
+      // TODO: create URL and expose endpoint for activation
+      content: 'Please click the next link to activate your account',
+    }); 
 
     return {
       message:

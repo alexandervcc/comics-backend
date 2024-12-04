@@ -4,6 +4,7 @@ import { configuration } from './config/configuration';
 import { AuthenticationModule } from './modules/authentication/authentication.module';
 import { ValidationModule } from './modules/validation/validation.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { KafkaModule } from './modules/kafka/kafka.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     }),
     AuthenticationModule,
     ValidationModule,
+    KafkaModule,
   ],
   controllers: [],
   providers: [],

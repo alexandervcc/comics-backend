@@ -13,7 +13,7 @@ public class KafkaConsumerService {
 
   @KafkaListener(topics = "#{@kafkaTopicBean}")
   public void listen(SendEmailRequestPayload message) {
-
+    // TODO: configure deserializer for objects
     this.logger.info("Message received, sending email :", message);
   }
 }
