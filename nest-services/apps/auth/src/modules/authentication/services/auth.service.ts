@@ -6,7 +6,6 @@ import { ResultStatus } from '../types/result-status';
 import { LoginUserDto, UserDto } from '../dto/UserDto';
 import { Result } from '../dto/ResultDto';
 import { Times } from '../../validation/utils.ts/time';
-import { UserModel } from '../schema/user';
 import { TokenDto } from '../dto/TokenDto';
 import { KafkaProducerService } from '../../kafka/services/kafka-producer.service';
 
@@ -17,24 +16,7 @@ class AuthService {
     private passwordService: PasswordService,
     private jwtService: JwtService,
     private userDao: UserDao,
-  ) {
-    this.signUp({
-      email: 'alex.charco.25@gmail.com',
-      password: 'mijotronxdddd',
-      username: 'alexandervcc',
-    });
-  }
-
-  async getUserById(_id: string): Promise<UserModel> {
-    const user = this.userDao.findById(_id);
-    if (user == null) {
-      throw new HttpException(
-        'No user found for provided id',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return user;
-  }
+  ) {}
 
   async signUp(user: UserDto): Promise<Result> {
     const userExists = await this.userDao.checkExistingUser(
@@ -64,7 +46,7 @@ class AuthService {
       subject: 'Activation email',
       // TODO: create URL and expose endpoint for activation
       content: 'Please click the next link to activate your account',
-    }); 
+    });
 
     return {
       message:
@@ -79,7 +61,7 @@ class AuthService {
     if (userFound == null) {
       throw new HttpException(
         'User not found, some of your credentials is invalid.',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.NOT_FOUND,
       );
     }
 

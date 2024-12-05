@@ -5,6 +5,7 @@ import { UserDao } from './dao/user.dao';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModel, UserSchema } from './schema/user';
 import { KafkaModule } from '../kafka/kafka.module';
+import { AuthenticationController } from './controllers/authentication.controller';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { KafkaModule } from '../kafka/kafka.module';
     ValidationModule,
     MongooseModule.forFeature([{ name: UserModel.name, schema: UserSchema }]),
   ],
-  controllers: [],
+  controllers: [AuthenticationController],
   providers: [AuthService, UserDao],
 })
 export class AuthenticationModule {}
