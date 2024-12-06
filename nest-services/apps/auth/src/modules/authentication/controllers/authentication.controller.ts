@@ -21,7 +21,8 @@ export class AuthenticationController {
   ): Promise<Response<TokenDto>> {
     const result = await this.authenticationService.logIn(data);
 
-    res.setHeader('Authorization', `Bearer ${result.token}`);
+    result.token ?? res.setHeader('Authorization', `Bearer ${result.token}`);
+
     return res.json({
       result: result.result,
       message: result.message,

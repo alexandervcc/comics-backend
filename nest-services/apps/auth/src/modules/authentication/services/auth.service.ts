@@ -8,6 +8,8 @@ import { Result } from '../dto/ResultDto';
 import { Times } from '../../validation/utils.ts/time';
 import { TokenDto } from '../dto/TokenDto';
 import { KafkaProducerService } from '../../kafka/services/kafka-producer.service';
+import { UserModel } from '../schema/user';
+import { KafkaTopics } from '../../kafka/constants/topics';
 
 @Injectable()
 class AuthService {
@@ -35,18 +37,13 @@ class AuthService {
       user.password,
     );
 
-    await this.userDao.createUser({
+    const newUser = await this.userDao.createUser({
       ...user,
       password: hashedPassword,
       active: false,
     });
 
-    await this.kafkaProducer.sendMessage('send.email', {
-      email: user.email,
-      subject: 'Activation email',
-      // TODO: create URL and expose endpoint for activation
-      content: 'Please click the next link to activate your account',
-    });
+    await this.sendActivationCode(newUser);
 
     return {
       message:
@@ -74,6 +71,14 @@ class AuthService {
       throw new HttpException(
         'Password provided is invalid.',
         HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (!userFound.active) {
+      await this.sendActivationCode(userFound);
+      throw new HttpException(
+        'Need to activate the user first, check your email for a new activation code.',
+        HttpStatus.FORBIDDEN,
       );
     }
 
@@ -107,6 +112,15 @@ class AuthService {
       message: 'User successfully actived, you can start using the app.',
       result: ResultStatus.Success,
     };
+  }
+
+  private async sendActivationCode(user: UserModel): Promise<void> {
+    return this.kafkaProducer.sendMessage(KafkaTopics.SendEmail, {
+      email: user.email,
+      subject: 'Activation email',
+      // TODO: create URL and expose endpoint for activation
+      content: 'Please click the next link to activate your account',
+    });
   }
 }
 
