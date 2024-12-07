@@ -6,13 +6,14 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
+import { Services } from 'apps/auth/src/constants/services';
 
 @Injectable()
 export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
   private logger = new Logger(KafkaProducerService.name);
 
   constructor(
-    @Inject('KAFKA_SERVICE') private readonly kafkaClient: ClientKafka,
+    @Inject(Services.KafkaService) private readonly kafkaClient: ClientKafka,
   ) {}
 
   async sendMessage(

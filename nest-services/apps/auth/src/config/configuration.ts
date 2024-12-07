@@ -14,4 +14,9 @@ export const configuration = registerAs('configuration', () => ({
   security: {
     jwtSecret: process.env.AUTH_JWT_SECRET,
   },
+  kafka: {
+    serviceName: process.env.AUTH_KAFKA_SERVICE,
+    clientId: process.env.AUTH_CLIENT_ID,
+    brokers: process.env.AUTH_KAFKA_BROKERS.split(','),
+  },
 }));
