@@ -1,5 +1,5 @@
-import { JwtPayload, sign, decode } from 'jsonwebtoken';
-import { Inject, Injectable } from '@nestjs/common';
+import { JwtPayload, sign, verify } from 'jsonwebtoken';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { TokenStatus } from '../types/token-status';
 import { currenHour } from '../utils.ts/time';
 import { configuration } from '../../../config/configuration';
@@ -7,6 +7,8 @@ import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 class JwtService {
+  private logger = new Logger(JwtService.name);
+
   constructor(
     @Inject(configuration.KEY)
     private readonly config: ConfigType<typeof configuration>,
@@ -18,16 +20,29 @@ class JwtService {
     });
   }
 
-  isValidToken(token: string): TokenStatus {
+  isValidToken<T extends JwtPayload>(
+    token: string,
+  ): { payload?: T; status: TokenStatus } {
+    let decodedToken;
     try {
-      const decodedToken = decode(token) as JwtPayload;
-      if (decodedToken.exp != null && decodedToken.exp > currenHour()) {
-        return TokenStatus.Expired;
+      decodedToken = verify(
+        token,
+        this.config.security.jwtSecret,
+      ) as JwtPayload;
+      const hour = currenHour();
+      if (decodedToken.exp != null && decodedToken.exp < hour) {
+        this.logger.log('Token is expired.', {
+          expirationDate: decodedToken.exp,
+          currentHour: hour,
+        });
+        return { status: TokenStatus.Expired };
       }
     } catch (error) {
-      return TokenStatus.Invalid;
+      this.logger.warn('Invalid token.', { token });
+      return { status: TokenStatus.Invalid };
     }
-    return TokenStatus.Valid;
+    this.logger.log('Token successfully decoded.', { decodedToken });
+    return { status: TokenStatus.Valid, payload: decodedToken };
   }
 }
 

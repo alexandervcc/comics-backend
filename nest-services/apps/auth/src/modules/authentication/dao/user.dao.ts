@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserModel } from '../schema/user';
-import { Model } from 'mongoose';
+import { Model, mongo } from 'mongoose';
 
 @Injectable()
 export class UserDao {
@@ -12,9 +12,7 @@ export class UserDao {
 
   async checkExistingUser(email: string, username: string) {
     const user = await this.userModel
-      .find({
-        $or: [{ email }, { username }],
-      })
+      .find({ $or: [{ email }, { username }] })
       .exec();
     return user.length > 0;
   }
@@ -32,13 +30,9 @@ export class UserDao {
     return newUser.save();
   }
 
-  async activateUser(activationCode: string) {
+  async activateUser(_id: mongo.ObjectId) {
     return this.userModel
-      .findOneAndUpdate(
-        { activationCode },
-        { $set: { activationCode: null, active: true } },
-        { new: true },
-      )
+      .findOneAndUpdate({ _id }, { $set: { active: true } }, { new: true })
       .exec();
   }
 }

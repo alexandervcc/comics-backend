@@ -10,7 +10,7 @@ export class AuthenticationController {
   constructor(private readonly authenticationService: AuthService) {}
 
   @Post('/sign-up')
-  public signUp(@Body() data: SignUpUserReq): Promise<Result> {
+  signUp(@Body() data: SignUpUserReq): Promise<Result> {
     return this.authenticationService.signUp(data);
   }
 
@@ -21,7 +21,9 @@ export class AuthenticationController {
   ): Promise<Response<TokenDto>> {
     const result = await this.authenticationService.logIn(data);
 
-    result.token ?? res.setHeader('Authorization', `Bearer ${result.token}`);
+    if (result.token) {
+      res.setHeader('Authorization', `Bearer ${result.token}`);
+    }
 
     return res.json({
       result: result.result,
